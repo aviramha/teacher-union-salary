@@ -57,6 +57,7 @@
       <v-col>
         <v-data-table
           disable-pagination
+          disable-sort
           :hide-default-footer="true"
           :headers="headers"
           :items="compensations"
@@ -68,12 +69,12 @@
 </template>
 
 <script>
-const this_jewish_year_bases = {
+const thisJewishYearBases = {
   "תואר ראשון": 5806,
   "תואר שני": 6095.9325,
 };
 
-const next_jewish_year_bases = {
+const nextJewishYearBases = {
   "תואר ראשון": 6300,
   "תואר שני": 6615,
 };
@@ -191,10 +192,10 @@ function calculateSalary(
   var base;
   var addition;
   if (jewishYear == "תשפ״ב") {
-    base = this_jewish_year_bases[degree];
+    base = thisJewishYearBases[degree];
     addition = 0;
   } else {
-    base = next_jewish_year_bases[degree];
+    base = nextJewishYearBases[degree];
     if (degree == "תואר ראשון") {
       addition = firstDegreeAddition[level - 1];
     } else {
