@@ -1,4 +1,7 @@
 # teacher-salary-simulator
+Forgive me for this but I'm not a frontend expert and this was a very cheap attempt at helping people :)
+
+Salary estimator/simulator for Israeli teachers unionized by the Histadrut.
 
 ## Project setup
 ```

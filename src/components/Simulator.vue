@@ -84,6 +84,76 @@ const seniority_1 = 1 / 100;
 const seniority2Years = 7;
 const seniority1Year = 36;
 
+const levelShiklit = [
+  1114.46, 983.98, 826.07, 741.53, 563.6, 563.6, 563.6, 563.6, 563.6,
+];
+
+const firstDegreeAddition = [
+  1585.54, 1335.54, 1085.54, 835.54, 585.54, 335.54, 185.54, 35.54, 0,
+];
+
+const secondDegreeAddition = [
+  1664.87, 1402.37, 1139.87, 877.37, 614.87, 352.37, 194.87, 37.37, 0,
+];
+
+// תשפ״ב
+const roleCompensationLastYear = {
+  "ריכוז שכבה (עד 4 כיתות)": 6 / 100,
+  "ריכוז שכבה (מעל 4 כיתות)": 6 / 100,
+  "ריכוז חברתי - חט״ב": 10 / 100,
+  "ריכוז חברתי - בי״ס יסודי": 6 / 100,
+  "ריכוז פדגוגי": 6 / 100,
+  "סגנות שניה ומעלה": 13 / 100,
+  "ניהול חטיבה צעירה": 13 / 100,
+  "ריכוז אחר (6%)": 6 / 100,
+};
+
+// as far as I understand they take either finite sum or percentage based on max
+// תשפ״ד
+const roleCompensationThisYearPercentage = {
+  "ריכוז שכבה (עד 4 כיתות)": 7 / 100,
+  "ריכוז שכבה (מעל 4 כיתות)": 6 / 100,
+  "ריכוז חברתי - חט״ב": 10 / 100,
+  "ריכוז חברתי - בי״ס יסודי": 8 / 100,
+  "ריכוז פדגוגי": 8 / 100,
+  "סגנות שניה ומעלה": 20 / 100,
+  "ניהול חטיבה צעירה": 20 / 100,
+  "ריכוז אחר (6%)": 6 / 100,
+};
+
+// תשפ״ד
+const roleCompensationNextSum = {
+  "ריכוז שכבה (עד 4 כיתות)": 1100,
+  "ריכוז שכבה (מעל 4 כיתות)": 1000,
+  "ריכוז חברתי - חט״ב": 0,
+  "ריכוז חברתי - בי״ס יסודי": 0,
+  "ריכוז פדגוגי": 0,
+  "סגנות שניה ומעלה": 1100,
+  "ניהול חטיבה צעירה": 1100,
+  "ריכוז אחר (6%)": 0,
+};
+
+function calcRoleCompensation(
+  year,
+  role,
+  percentage,
+  twentytwoAddition,
+  mixedCompensation
+) {
+  if (role == "ללא") {
+    return 0;
+  }
+  let salary = mixedCompensation + twentytwoAddition
+  if (year == "תשפ״ב" || year == "תשפ״ג") {
+    return salary * roleCompensationLastYear[role] * percentage;
+  } else if (year == "תשפ״ד") {
+    return Math.max(
+      salary * roleCompensationThisYearPercentage[role] * percentage,
+      roleCompensationNextSum[role]
+    );
+  }
+}
+
 function calculateSalary(
   degree,
   hinuchComp,
@@ -96,15 +166,25 @@ function calculateSalary(
   seniority;
   level;
   var base;
+  var addition;
   if (jewishYear == "תשפ״ב") {
     base = this_jewish_year_bases[degree];
+    addition = 0;
   } else {
     base = next_jewish_year_bases[degree];
+    if (degree == "תואר ראשון") {
+      addition = firstDegreeAddition[level - 1];
+    } else {
+      addition = secondDegreeAddition[level - 1];
+    }
   }
+  if (jewishYear == "תשפ״ג") {
+    addition /= 2;
+  }
+  addition *= percentage;
 
-  let data = {
-    mixedCompensation:
-      Math.round(base *
+  let mixedCompensation = Math.round(
+    base *
       (1 + level_7_5) ** (level - 1) *
       (1 + seniority_2) ** Math.min(seniority2Years - 1, seniority - 1) *
       (1 + seniority_1) **
@@ -112,13 +192,32 @@ function calculateSalary(
           seniority1Year - seniority2Years,
           Math.max(0, seniority - seniority2Years)
         ) *
-      percentage),
-    shiklitAddition: 0,
-    twentytwoAddition: 0,
+      percentage
+  );
+
+  var roleCompensation1 = calcRoleCompensation(
+    jewishYear,
+    roles[0] || "ללא",
+    percentage,
+    addition,
+    mixedCompensation
+  );
+  var roleCompensation2 = calcRoleCompensation(
+    jewishYear,
+    roles[1] || "ללא",
+    percentage,
+    addition,
+    mixedCompensation
+  );
+
+  let data = {
+    mixedCompensation: mixedCompensation,
+    shiklitAddition: Math.round(levelShiklit[level - 1] * percentage),
+    twentytwoAddition: Math.round(addition),
     phoneReimbursement: percentage * 49,
     hinuchCompensation: 0,
-    roleCompensation1: 0,
-    roleCompensation2: 0,
+    roleCompensation1: Math.round(roleCompensation1),
+    roleCompensation2: Math.round(roleCompensation2),
     specialEducationCompensation: 0,
     kindergardenCompensation: 0,
   };
