@@ -133,6 +133,15 @@ const roleCompensationNextSum = {
   "ריכוז אחר (6%)": 0,
 };
 
+// כיתה א׳
+const hinuchA = 11.5 / 100;
+
+// כיתה ב׳-ט׳
+const hinuchRest = 10 / 100;
+
+// same for both options (א-ט׳)
+const finiteCompHinuch = 1000;
+
 function calcRoleCompensation(
   year,
   role,
@@ -143,7 +152,7 @@ function calcRoleCompensation(
   if (role == "ללא") {
     return 0;
   }
-  let salary = mixedCompensation + twentytwoAddition
+  let salary = mixedCompensation + twentytwoAddition;
   if (year == "תשפ״ב" || year == "תשפ״ג") {
     return salary * roleCompensationLastYear[role] * percentage;
   } else if (year == "תשפ״ד") {
@@ -152,6 +161,21 @@ function calcRoleCompensation(
       roleCompensationNextSum[role]
     );
   }
+}
+
+function calculateHinuch(
+  percentage,
+  twentytwoAddition,
+  mixedCompensation,
+  year,
+  hinuch
+) {
+  let salary = mixedCompensation + twentytwoAddition;
+  var comp = salary * hinuch;
+  if (year == "תשפ״ד") {
+    comp = Math.max(comp, finiteCompHinuch);
+  }
+  return comp * percentage;
 }
 
 function calculateSalary(
@@ -163,8 +187,6 @@ function calculateSalary(
   level,
   jewishYear
 ) {
-  seniority;
-  level;
   var base;
   var addition;
   if (jewishYear == "תשפ״ב") {
@@ -210,12 +232,23 @@ function calculateSalary(
     mixedCompensation
   );
 
+  var hinuchCompensation = 0;
+  if (hinuchComp != "ללא") {
+    let hinuchVariable = hinuchComp == "כיתה א׳" ? hinuchA : hinuchRest;
+    hinuchCompensation = calculateHinuch(
+      percentage,
+      addition,
+      mixedCompensation,
+      jewishYear,
+      hinuchVariable
+    );
+  }
   let data = {
     mixedCompensation: mixedCompensation,
     shiklitAddition: Math.round(levelShiklit[level - 1] * percentage),
     twentytwoAddition: Math.round(addition),
-    phoneReimbursement: percentage * 49,
-    hinuchCompensation: 0,
+    phoneReimbursement: Math.round(percentage * 48.6),
+    hinuchCompensation: Math.round(hinuchCompensation),
     roleCompensation1: Math.round(roleCompensation1),
     roleCompensation2: Math.round(roleCompensation2),
     specialEducationCompensation: 0,
