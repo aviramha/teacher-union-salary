@@ -51,61 +51,87 @@
             multiple
             counter="2"
           ></v-select>
-          <v-btn
-            :disabled="!valid"
-            color="success"
-            class="mr-4"
-          >
-            חשב
-          </v-btn>
+          <v-btn :disabled="!valid" color="success" class="mr-4"> חשב </v-btn>
         </v-form>
       </v-col>
       <v-col>
-        <v-data-table disable-pagination :headers="headers" :items="compensations">
+        <v-data-table
+          disable-pagination
+          :headers="headers"
+          :items="compensations"
+        >
         </v-data-table>
-        
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-// const this_jewish_year_bases = {
-//   "תואר ראשון": 5806,
-//   "תואר שני": 6095.9325
-// }
+const this_jewish_year_bases = {
+  "תואר ראשון": 5806,
+  "תואר שני": 6095.9325,
+};
 
-// const next_jewish_year_bases = {
-//   "תואר ראשון": 6300,
-//   "תואר שני": 6615
-// }
+const next_jewish_year_bases = {
+  "תואר ראשון": 6300,
+  "תואר שני": 6615,
+};
 
-function calculateSalary(degree, hinuchComp, roles, percentage, seniority, level, jewishYear) {
+// not sure what it means?
+const level_7_5 = 7.5 / 100;
+const seniority_2 = 2 / 100;
+const seniority_1 = 1 / 100;
+const seniority2Years = 7;
+const seniority1Year = 36;
+
+function calculateSalary(
+  degree,
+  hinuchComp,
+  roles,
+  percentage,
+  seniority,
+  level,
+  jewishYear
+) {
   seniority;
   level;
+  var base;
+  if (jewishYear == "תשפ״ב") {
+    base = this_jewish_year_bases[degree];
+  } else {
+    base = next_jewish_year_bases[degree];
+  }
 
   let data = {
-    "mixedCompensation": 0,
-    "shiklitAddition": 0,
-    "twentytwoAddition": 0,
-    "phoneReimbursement": percentage * 49,
-    "hinuchCompensation": 0,
-    "roleCompensation1": 0,
-    "roleCompensation2": 0,
-    "specialEducationCompensation": 0,
-    "kindergardenCompensation": 0,
-  }
+    mixedCompensation:
+      Math.round(base *
+      (1 + level_7_5) ** (level - 1) *
+      (1 + seniority_2) ** Math.min(seniority2Years - 1, seniority - 1) *
+      (1 + seniority_1) **
+        Math.min(
+          seniority1Year - seniority2Years,
+          Math.max(0, seniority - seniority2Years)
+        ) *
+      percentage),
+    shiklitAddition: 0,
+    twentytwoAddition: 0,
+    phoneReimbursement: percentage * 49,
+    hinuchCompensation: 0,
+    roleCompensation1: 0,
+    roleCompensation2: 0,
+    specialEducationCompensation: 0,
+    kindergardenCompensation: 0,
+  };
   const values = Object.values(data);
 
   const sum = values.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
   data["totalCompensation"] = sum;
-  data["jewishYear"] = jewishYear
+  data["jewishYear"] = jewishYear;
 
-  return data
+  return data;
 }
-
 
 export default {
   name: "Simulator",
@@ -136,27 +162,51 @@ export default {
       let role1 = this.chosenRoles[0] || "ללא";
       let role2 = this.chosenRoles[1] || "ללא";
       return [
-        {"text": "שנה", "value": "jewishYear"},
-        {"text": "שכר משולב", "value": "mixedCompensation"},
-        {"text": "תוספת שקלית 2016", "value": "shiklitAddition"},
-        {"text": "תוספת 2022", "value": "twentytwoAddition"},
-        {"text": "החזר טלפון", "value": "phoneReimbursement"},
-        {"text": "גמול חינוך", "value": "hinuchCompensation"},
-        {"text": "גמול תפקיד " + role1, "value": "roleCompensation1"},
-        {"text": "גמול תפקיד " + role2, "value": "roleCompensation2"},
-        {"text": "גמול חנ״מ", "value": "specialEducationCompensation"},
-        {"text": "גמול גננות", "value": "kindergardenCompensation"},
-        {"text": "סה״כ ברוטו", "value": "totalCompensation"},
-      ]
+        { text: "שנה", value: "jewishYear" },
+        { text: "שכר משולב", value: "mixedCompensation" },
+        { text: "תוספת שקלית 2016", value: "shiklitAddition" },
+        { text: "תוספת 2022", value: "twentytwoAddition" },
+        { text: "החזר טלפון", value: "phoneReimbursement" },
+        { text: "גמול חינוך", value: "hinuchCompensation" },
+        { text: "גמול תפקיד " + role1, value: "roleCompensation1" },
+        { text: "גמול תפקיד " + role2, value: "roleCompensation2" },
+        { text: "גמול חנ״מ", value: "specialEducationCompensation" },
+        { text: "גמול גננות", value: "kindergardenCompensation" },
+        { text: "סה״כ ברוטו", value: "totalCompensation" },
+      ];
     },
     compensations() {
-      let percentage = this.percentage / 100
+      let percentage = this.percentage / 100;
       return [
-        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, percentage, this.seniority, this.level, "תשפ״ב"),
-        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, percentage, this.seniority, this.level, "תשפ״ג"),
-        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, percentage, this.seniority, this.level, "תשפ״ד")
-      ]
-    }
+        calculateSalary(
+          this.degree,
+          this.hinuchComp,
+          this.chosenRoles,
+          percentage,
+          this.seniority,
+          this.level,
+          "תשפ״ב"
+        ),
+        calculateSalary(
+          this.degree,
+          this.hinuchComp,
+          this.chosenRoles,
+          percentage,
+          this.seniority,
+          this.level,
+          "תשפ״ג"
+        ),
+        calculateSalary(
+          this.degree,
+          this.hinuchComp,
+          this.chosenRoles,
+          percentage,
+          this.seniority,
+          this.level,
+          "תשפ״ד"
+        ),
+      ];
+    },
   },
 };
 </script>
