@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center" class="text-center" align="center">
-      <v-col cols="4" align-self="center">
+      <v-col cols="12" align-self="center">
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
             v-model="percentage"
