@@ -55,14 +55,13 @@
             :disabled="!valid"
             color="success"
             class="mr-4"
-            @click="validate"
           >
             חשב
           </v-btn>
         </v-form>
       </v-col>
       <v-col>
-        <v-data-table :headers="headers" :items="compensations">
+        <v-data-table disable-pagination :headers="headers" :items="compensations">
         </v-data-table>
         
       </v-col>
@@ -84,7 +83,6 @@
 function calculateSalary(degree, hinuchComp, roles, percentage, seniority, level, jewishYear) {
   seniority;
   level;
-  jewishYear;
 
   let data = {
     "mixedCompensation": 0,
@@ -95,7 +93,7 @@ function calculateSalary(degree, hinuchComp, roles, percentage, seniority, level
     "roleCompensation1": 0,
     "roleCompensation2": 0,
     "specialEducationCompensation": 0,
-    "kindergardenCompensation": 0
+    "kindergardenCompensation": 0,
   }
   const values = Object.values(data);
 
@@ -103,6 +101,9 @@ function calculateSalary(degree, hinuchComp, roles, percentage, seniority, level
     return accumulator + value;
   }, 0);
   data["totalCompensation"] = sum;
+  data["jewishYear"] = jewishYear
+
+  return data
 }
 
 
@@ -135,6 +136,7 @@ export default {
       let role1 = this.chosenRoles[0] || "ללא";
       let role2 = this.chosenRoles[1] || "ללא";
       return [
+        {"text": "שנה", "value": "jewishYear"},
         {"text": "שכר משולב", "value": "mixedCompensation"},
         {"text": "תוספת שקלית 2016", "value": "shiklitAddition"},
         {"text": "תוספת 2022", "value": "twentytwoAddition"},
@@ -148,10 +150,11 @@ export default {
       ]
     },
     compensations() {
+      let percentage = this.percentage / 100
       return [
-        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, this.percentage, this.seniority, this.level, "תשפ״ב"),
-        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, this.percentage, this.seniority, this.level, "תשפ״ג"),
-        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, this.percentage, this.seniority, this.level, "תשפ״ד")
+        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, percentage, this.seniority, this.level, "תשפ״ב"),
+        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, percentage, this.seniority, this.level, "תשפ״ג"),
+        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, percentage, this.seniority, this.level, "תשפ״ד")
       ]
     }
   },
