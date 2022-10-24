@@ -3,6 +3,11 @@ Forgive me for this but I'm not a frontend expert and this was a very cheap atte
 
 Salary estimator/simulator for Israeli teachers unionized by the Histadrut.
 
+Based on work by Zvika Leybovitch
+
+
+** THIS IS AN ESTIMATE, NOT A GUARANTEE, GIVEN AS A SERVICE TO THE PUBLIC. **
+
 ## Project setup
 ```
 npm install
