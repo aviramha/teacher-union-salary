@@ -49,6 +49,7 @@
             chips
             label="תפקידים"
             multiple
+            counter="2"
           ></v-select>
           <v-btn
             :disabled="!valid"
@@ -61,38 +62,9 @@
         </v-form>
       </v-col>
       <v-col>
-        <v-simple-table>
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th class="text-left">שכר משולב</th>
-                <th class="text-left">תוספת שקלית 2016</th>
-                <th class="text-left">תוספת 2022</th>
-                <th class="text-left">החזר טלפון</th>
-                <th class="text-left">גמול חינוך</th>
-                <th class="text-left">גמול תפקיד {{ chosenRoles[0] }}</th>
-                <th class="text-left">גמול תפקיד {{ chosenRoles[1] }}</th>
-                <th class="text-left">גמול חנ״מ</th>
-                <th class="text-left">גמול גננות</th>
-                <th class="text-left">סה״כ ברוטו</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in desserts" :key="item.name">
-                <td>{{ mixedComp }}</td>
-                <td>{{ shiklitAddition }}</td>
-                <td>{{ twentytwoAddition }}</td>
-                <td>{{ phoneReimbursement }}</td>
-                <td>{{ hinuchCompensation }}</td>
-                <td>{{ firstRoleCompensation }}</td>
-                <td>{{ secondRoleCompensation }}</td>
-                <td>{{ specialEducationCompensation }}</td>
-                <td>{{ kindergardenCompensation }}</td>
-                <td>{{ total }}</td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
+        <v-data-table :headers="headers" :items="compensations">
+        </v-data-table>
+        
       </v-col>
     </v-row>
   </v-container>
@@ -109,8 +81,33 @@
 //   "תואר שני": 6615
 // }
 
+function calculateSalary(degree, hinuchComp, roles, percentage, seniority, level, jewishYear) {
+  seniority;
+  level;
+  jewishYear;
+
+  let data = {
+    "mixedCompensation": 0,
+    "shiklitAddition": 0,
+    "twentytwoAddition": 0,
+    "phoneReimbursement": percentage * 49,
+    "hinuchCompensation": 0,
+    "roleCompensation1": 0,
+    "roleCompensation2": 0,
+    "specialEducationCompensation": 0,
+    "kindergardenCompensation": 0
+  }
+  const values = Object.values(data);
+
+  const sum = values.reduce((accumulator, value) => {
+    return accumulator + value;
+  }, 0);
+  data["totalCompensation"] = sum;
+}
+
+
 export default {
-  name: "HelloWorld",
+  name: "Simulator",
 
   data: () => ({
     valid: true,
@@ -134,36 +131,29 @@ export default {
     level: 1,
   }),
   computed: {
-    mixedComp() {
-      return 0;
+    headers() {
+      let role1 = this.chosenRoles[0] || "ללא";
+      let role2 = this.chosenRoles[1] || "ללא";
+      return [
+        {"text": "שכר משולב", "value": "mixedCompensation"},
+        {"text": "תוספת שקלית 2016", "value": "shiklitAddition"},
+        {"text": "תוספת 2022", "value": "twentytwoAddition"},
+        {"text": "החזר טלפון", "value": "phoneReimbursement"},
+        {"text": "גמול חינוך", "value": "hinuchCompensation"},
+        {"text": "גמול תפקיד " + role1, "value": "roleCompensation1"},
+        {"text": "גמול תפקיד " + role2, "value": "roleCompensation2"},
+        {"text": "גמול חנ״מ", "value": "specialEducationCompensation"},
+        {"text": "גמול גננות", "value": "kindergardenCompensation"},
+        {"text": "סה״כ ברוטו", "value": "totalCompensation"},
+      ]
     },
-    shiklitAddition() {
-      return 0;
-    },
-    twentytwoAddition() {
-      return 0;
-    },
-    phoneReimbursement() {
-      return 0;
-    },
-    hinuchCompensation() {
-      return 0;
-    },
-    firstRoleCompensation() {
-      return 0;
-    },
-    secondRoleCompensation() {
-      return 0;
-    },
-    specialEducationCompensation() {
-      return 0;
-    },
-    kindergardenCompensation() {
-      return 0;
-    },
-    total() {
-      return 0;
-    },
+    compensations() {
+      return [
+        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, this.percentage, this.seniority, this.level, "תשפ״ב"),
+        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, this.percentage, this.seniority, this.level, "תשפ״ג"),
+        calculateSalary(this.degree, this.hinuchComp, this.chosenRoles, this.percentage, this.seniority, this.level, "תשפ״ד")
+      ]
+    }
   },
 };
 </script>
