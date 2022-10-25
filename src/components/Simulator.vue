@@ -295,12 +295,7 @@ function calculateKindergarden(
   mixedCompensationRaw,
   year
 ) {
-  //   kindergardenRoles: [
-  //   "גננת משלימה זכאית",
-  //   "ניהול גן (חדשה באופק)",
-  //   "ניהול גן (ותיקה באופק)",
-  //   "ניהול אשכול",
-  // ],
+
   if (kindergardenRole == "ניהול אשכול") {
     return 0.25 * mixedCompensationRaw;
   } else if (kindergardenRole == "גננת משלימה זכאית") {
