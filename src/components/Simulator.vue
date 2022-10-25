@@ -51,6 +51,42 @@
             multiple
             counter="2"
           ></v-select>
+          <v-switch v-model="isSpecialEducation" label="חינוך מיוחד">
+          </v-switch>
+          <v-container v-if="isSpecialEducation">
+            <v-text-field
+              v-model="schoolSpecialEdPercentage"
+              type="number"
+              min="0"
+              max="100"
+              label="% משרה חנ״מ בבי״ס"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="schoolExtraSpecialEdPercentage"
+              type="number"
+              min="0"
+              max="100"
+              label="% משרה חנ״מ בבי״ס אוטיזם / הפרעות נפשיות קשות"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="matyaSpecialEdPercentage"
+              type="number"
+              min="0"
+              max="100"
+              label="% משרה חנ״מ במתי״א"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="matyaExtraSpecialEdPercentage"
+              type="number"
+              min="0"
+              max="100"
+              label="% משרה חנ״מ במתי״א אוטיזם / הפרעות נפשיות קשות"
+              required
+            ></v-text-field>
+          </v-container>
           <v-btn :disabled="!valid" color="success" class="mr-4"> חשב </v-btn>
         </v-form>
       </v-col>
@@ -180,6 +216,50 @@ function calculateHinuch(
   return comp * percentage;
 }
 
+// All are percentages
+function calculateSpecialEd(
+  school,
+  extraSchool,
+  matya,
+  extraMatya,
+  twentytwoAddition,
+  mixedCompensation,
+  year
+) {
+  let salary = mixedCompensation + twentytwoAddition;
+  const schoolBonusThisYear = 14 / 100;
+  // תשפ״ד
+  const schoolBonusNextYear = 15 / 100;
+
+  const extraSchoolBonusThisYear = 14 / 100;
+  // תשפ״ד
+  const extraSchoolBonusNextYear = 17 / 100;
+
+  const matyaBonusThisYear = 9 / 100;
+  // תשפ״ד
+  const matyaBonusNextYear = 15 / 100;
+
+  const extraMatyaBonusThisYear = 9 / 100;
+  // תשפ״ד
+  const extraMatyaBonusNextYear = 17 / 100;
+
+  if (year != "תשפ״ד") {
+    return (
+      salary * schoolBonusThisYear * school +
+      salary * extraSchoolBonusThisYear * extraSchool +
+      salary * matyaBonusThisYear * matya +
+      salary * extraMatyaBonusThisYear * extraMatya
+    );
+  } else {
+    return (
+      salary * schoolBonusNextYear * school +
+      salary * extraSchoolBonusNextYear * extraSchool +
+      salary * matyaBonusNextYear * matya +
+      salary * extraMatyaBonusNextYear * extraMatya
+    );
+  }
+}
+
 function calculateSalary(
   degree,
   hinuchComp,
@@ -187,6 +267,11 @@ function calculateSalary(
   percentage,
   seniority,
   level,
+  schoolSpecialEdPercentage,
+  schoolExtraSpecialEdPercentage,
+  matyaSpecialEdPercentage,
+  matyaExtraSpecialEdPercentage,
+  isSpecialEducation,
   jewishYear
 ) {
   var base;
@@ -245,6 +330,19 @@ function calculateSalary(
       hinuchVariable
     );
   }
+
+  var specialEdComp = 0;
+  if (isSpecialEducation) {
+    specialEdComp = calculateSpecialEd(
+      schoolSpecialEdPercentage / 100,
+      schoolExtraSpecialEdPercentage / 100,
+      matyaSpecialEdPercentage / 100,
+      matyaExtraSpecialEdPercentage / 100,
+      addition,
+      mixedCompensation,
+      jewishYear
+    );
+  }
   let data = {
     mixedCompensation: mixedCompensation,
     shiklitAddition: Math.round(levelShiklit[level - 1] * percentage),
@@ -253,7 +351,7 @@ function calculateSalary(
     hinuchCompensation: Math.round(hinuchCompensation),
     roleCompensation1: Math.round(roleCompensation1),
     roleCompensation2: Math.round(roleCompensation2),
-    specialEducationCompensation: 0,
+    specialEducationCompensation: Math.round(specialEdComp),
     kindergardenCompensation: 0,
   };
   const values = Object.values(data);
@@ -290,6 +388,11 @@ export default {
     percentage: 100,
     seniority: 1,
     level: 1,
+    isSpecialEducation: false,
+    schoolSpecialEdPercentage: 0,
+    schoolExtraSpecialEdPercentage: 0,
+    matyaSpecialEdPercentage: 0,
+    matyaExtraSpecialEdPercentage: 0,
   }),
   computed: {
     headers() {
@@ -319,6 +422,11 @@ export default {
           percentage,
           this.seniority,
           this.level,
+          this.schoolSpecialEdPercentage,
+          this.schoolExtraSpecialEdPercentage,
+          this.matyaSpecialEdPercentage,
+          this.matyaExtraSpecialEdPercentage,
+          this.isSpecialEducation,
           "תשפ״ב"
         ),
         calculateSalary(
@@ -328,6 +436,11 @@ export default {
           percentage,
           this.seniority,
           this.level,
+          this.schoolSpecialEdPercentage,
+          this.schoolExtraSpecialEdPercentage,
+          this.matyaSpecialEdPercentage,
+          this.matyaExtraSpecialEdPercentage,
+          this.isSpecialEducation,
           "תשפ״ג"
         ),
         calculateSalary(
@@ -337,6 +450,11 @@ export default {
           percentage,
           this.seniority,
           this.level,
+          this.schoolSpecialEdPercentage,
+          this.schoolExtraSpecialEdPercentage,
+          this.matyaSpecialEdPercentage,
+          this.matyaExtraSpecialEdPercentage,
+          this.isSpecialEducation,
           "תשפ״ד"
         ),
       ];
