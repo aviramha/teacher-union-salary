@@ -87,7 +87,28 @@
               required
             ></v-text-field>
           </v-container>
+          <v-switch v-model="isGanenet" label="גננת"> </v-switch>
+          <v-container v-if="isGanenet">
+            <v-select
+              v-model="kindergardenRole"
+              :items="kindergardenRoles"
+              label="תפקיד"
+              required
+            ></v-select>
+            <v-text-field
+              v-if="kindergardenRole == 'ניהול גן (ותיקה באופק)'"
+              type="number"
+              min="0"
+              max="10"
+              v-model="kindergardenSeniority"
+              label="וותק בניהול"
+              required
+            ></v-text-field>
+          </v-container>
           <v-btn :disabled="!valid" color="success" class="mr-4"> חשב </v-btn>
+          <v-btn @click="reset" :disabled="!valid" color="warning" class="mr-4">
+            אפס
+          </v-btn>
         </v-form>
       </v-col>
       <v-col>
@@ -260,6 +281,49 @@ function calculateSpecialEd(
   }
 }
 
+const kinderLevelComp = [0.17, 0.17, 0.2, 0.2, 0.21, 0.21, 0.21, 0.21, 0.21];
+
+const kinderSeniorityComp = [
+  0.17, 0.17, 0.17, 0.17, 0.17, 0.17, 0.2, 0.2, 0.2, 0.2, 0.21,
+];
+
+function calculateKindergarden(
+  kindergardenRole,
+  kindergardenSeniority,
+  level,
+  percentage,
+  mixedCompensationRaw,
+  year
+) {
+  //   kindergardenRoles: [
+  //   "גננת משלימה זכאית",
+  //   "ניהול גן (חדשה באופק)",
+  //   "ניהול גן (ותיקה באופק)",
+  //   "ניהול אשכול",
+  // ],
+  if (kindergardenRole == "ניהול אשכול") {
+    return 0.25 * mixedCompensationRaw;
+  } else if (kindergardenRole == "גננת משלימה זכאית") {
+    if (year == "תשפ״ד") {
+      return 0.1 * mixedCompensationRaw * percentage;
+    }
+    return 0;
+  } else if (kindergardenRole == "ניהול גן (חדשה באופק)") {
+    let optA = kinderLevelComp[level] * mixedCompensationRaw;
+    if (year == "תשפ״ד") {
+      return Math.max(optA, 1500);
+    }
+    return optA;
+  } else if (kindergardenRole == "ניהול גן (ותיקה באופק)") {
+    let optA =
+      kinderSeniorityComp[kindergardenSeniority] * mixedCompensationRaw;
+    if (year == "תשפ״ד") {
+      return Math.max(optA, 1500);
+    }
+    return optA;
+  }
+}
+
 function calculateSalary(
   degree,
   hinuchComp,
@@ -272,7 +336,10 @@ function calculateSalary(
   matyaSpecialEdPercentage,
   matyaExtraSpecialEdPercentage,
   isSpecialEducation,
-  jewishYear
+  jewishYear,
+  isGanenet,
+  kindergardenRole,
+  kindergardenSeniority
 ) {
   var base;
   var addition;
@@ -292,7 +359,7 @@ function calculateSalary(
   }
   addition *= percentage;
 
-  let mixedCompensation = Math.round(
+  let mixedCompensationRaw = Math.round(
     base *
       (1 + level_7_5) ** (level - 1) *
       (1 + seniority_2) ** Math.min(seniority2Years - 1, seniority - 1) *
@@ -300,10 +367,10 @@ function calculateSalary(
         Math.min(
           seniority1Year - seniority2Years,
           Math.max(0, seniority - seniority2Years)
-        ) *
-      percentage
+        )
   );
 
+  let mixedCompensation = mixedCompensationRaw * percentage;
   var roleCompensation1 = calcRoleCompensation(
     jewishYear,
     roles[0] || "ללא",
@@ -343,6 +410,17 @@ function calculateSalary(
       jewishYear
     );
   }
+  var kindergardenCompensation = 0;
+  if (isGanenet) {
+    kindergardenCompensation = calculateKindergarden(
+      kindergardenRole,
+      kindergardenSeniority,
+      level,
+      percentage,
+      mixedCompensationRaw,
+      jewishYear
+    );
+  }
   let data = {
     mixedCompensation: mixedCompensation,
     shiklitAddition: Math.round(levelShiklit[level - 1] * percentage),
@@ -352,7 +430,7 @@ function calculateSalary(
     roleCompensation1: Math.round(roleCompensation1),
     roleCompensation2: Math.round(roleCompensation2),
     specialEducationCompensation: Math.round(specialEdComp),
-    kindergardenCompensation: 0,
+    kindergardenCompensation: Math.round(kindergardenCompensation),
   };
   const values = Object.values(data);
 
@@ -367,7 +445,25 @@ function calculateSalary(
 
 export default {
   name: "Simulator",
-
+  methods: {
+    reset() {
+      this.degree = "תואר ראשון";
+      this.level = 1;
+      this.seniority = 1;
+      this.percentage = 100;
+      this.hinuchComp = "ללא";
+      this.chosenRoles = [];
+      this.isSpecialEducation = false;
+      this.schoolSpecialEdPercentage = 0;
+      this.schoolExtraSpecialEdPercentage = 0;
+      this.matyaSpecialEdPercentage = 0;
+      this.matyaExtraSpecialEdPercentage = 0;
+      this.jewishYear = "תשפ״ב";
+      this.kindergardenRole = null;
+      this.isGanenet = false;
+      this.kindergardenSeniority = 0;
+    },
+  },
   data: () => ({
     valid: true,
     degrees: ["תואר ראשון", "תואר שני"],
@@ -393,6 +489,15 @@ export default {
     schoolExtraSpecialEdPercentage: 0,
     matyaSpecialEdPercentage: 0,
     matyaExtraSpecialEdPercentage: 0,
+    isGanenet: false,
+    kindergardenRole: null,
+    kindergardenRoles: [
+      "גננת משלימה זכאית",
+      "ניהול גן (חדשה באופק)",
+      "ניהול גן (ותיקה באופק)",
+      "ניהול אשכול",
+    ],
+    kindergardenSeniority: 0,
   }),
   computed: {
     headers() {
@@ -427,7 +532,10 @@ export default {
           this.matyaSpecialEdPercentage,
           this.matyaExtraSpecialEdPercentage,
           this.isSpecialEducation,
-          "תשפ״ב"
+          "תשפ״ב",
+          this.isGanenet,
+          this.kindergardenRole,
+          this.kindergardenSeniority
         ),
         calculateSalary(
           this.degree,
@@ -441,7 +549,10 @@ export default {
           this.matyaSpecialEdPercentage,
           this.matyaExtraSpecialEdPercentage,
           this.isSpecialEducation,
-          "תשפ״ג"
+          "תשפ״ג",
+          this.isGanenet,
+          this.kindergardenRole,
+          this.kindergardenSeniority
         ),
         calculateSalary(
           this.degree,
@@ -455,7 +566,10 @@ export default {
           this.matyaSpecialEdPercentage,
           this.matyaExtraSpecialEdPercentage,
           this.isSpecialEducation,
-          "תשפ״ד"
+          "תשפ״ד",
+          this.isGanenet,
+          this.kindergardenRole,
+          this.kindergardenSeniority
         ),
       ];
     },
