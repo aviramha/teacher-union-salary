@@ -117,6 +117,7 @@
         <v-data-table
           disable-pagination
           disable-sort
+          disable-filtering
           :hide-default-footer="true"
           :headers="headers"
           :items="compensations"
