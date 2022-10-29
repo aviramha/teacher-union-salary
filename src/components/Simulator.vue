@@ -118,12 +118,9 @@
               <v-col
                 v-for="(item, index) in compensations"
                 :key="index"
-                cols="12"
-                sm="6"
                 md="4"
-                lg="3"
                 align-self="center"
-
+                sm="auto"
               >
                 <v-card>
                   <v-card-title class="subheading font-weight-bold">
