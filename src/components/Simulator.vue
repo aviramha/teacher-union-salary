@@ -112,19 +112,43 @@
         </v-form>
       </v-col>
     </v-row>
+      <v-container fluid>
+        <v-data-iterator :items="compensations" hide-default-footer>
     <v-row justify="center" class="text-center" align="center">
-      <v-col cols="auto" align-self="center">
-        <v-data-table
-          disable-pagination
-          disable-sort
-          disable-filtering
-          :hide-default-footer="true"
-          :headers="headers"
-          :items="compensations"
-        >
-        </v-data-table>
-      </v-col>
-    </v-row>
+              <v-col
+                v-for="(item, index) in compensations"
+                :key="index"
+                cols="12"
+                sm="6"
+                md="4"
+                lg="3"
+                align-self="center"
+
+              >
+                <v-card>
+                  <v-card-title class="subheading font-weight-bold">
+                    {{ item.jewishYear }}
+                  </v-card-title>
+
+                  <v-divider></v-divider>
+
+                  <v-list dense>
+                    <template v-for="(header, index) in headers">
+                      <v-list-item :key="index">
+                        <v-list-item-content>{{
+                          header.text
+                        }}</v-list-item-content>
+                        <v-list-item-content class="align-end">
+                          {{ item[header.value] }}
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-list>
+                </v-card>
+              </v-col>
+            </v-row>
+        </v-data-iterator>
+      </v-container>
   </v-container>
 </template>
 
@@ -298,7 +322,6 @@ function calculateKindergarden(
   mixedCompensationRaw,
   year
 ) {
-
   if (kindergardenRole == "ניהול אשכול") {
     return 0.25 * mixedCompensationRaw;
   } else if (kindergardenRole == "גננת משלימה זכאית") {
@@ -502,7 +525,6 @@ export default {
       let role1 = this.chosenRoles[0] || "ללא";
       let role2 = this.chosenRoles[1] || "ללא";
       return [
-        { text: "שנה", value: "jewishYear" },
         { text: "שכר משולב", value: "mixedCompensation" },
         { text: "תוספת שקלית 2016", value: "shiklitAddition" },
         { text: "תוספת 2022", value: "twentytwoAddition" },
