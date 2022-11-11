@@ -7,9 +7,10 @@
             v-model="percentage"
             type="number"
             min="1"
-            max="100"
+            max="150"
             label="אחוז משרה"
             required
+            :rules="percentageRules"
           ></v-text-field>
           <v-text-field
             v-model="seniority"
@@ -50,6 +51,7 @@
             label="תפקידים"
             multiple
             counter="2"
+            :rules="rolesRules"
           ></v-select>
           <v-switch v-model="isSpecialEducation" label="חינוך מיוחד">
           </v-switch>
@@ -61,6 +63,7 @@
               max="100"
               label="% משרה חנ״מ בבי״ס"
               required
+              :rules="specialEdPercentageRules"
             ></v-text-field>
             <v-text-field
               v-model="schoolExtraSpecialEdPercentage"
@@ -69,6 +72,7 @@
               max="100"
               label="% משרה חנ״מ בבי״ס אוטיזם / הפרעות נפשיות קשות"
               required
+              :rules="specialEdPercentageRules"
             ></v-text-field>
             <v-text-field
               v-model="matyaSpecialEdPercentage"
@@ -77,6 +81,7 @@
               max="100"
               label="% משרה חנ״מ במתי״א"
               required
+              :rules="specialEdPercentageRules"
             ></v-text-field>
             <v-text-field
               v-model="matyaExtraSpecialEdPercentage"
@@ -85,6 +90,7 @@
               max="100"
               label="% משרה חנ״מ במתי״א אוטיזם / הפרעות נפשיות קשות"
               required
+              :rules="specialEdPercentageRules"
             ></v-text-field>
           </v-container>
           <v-switch v-model="isGanenet" label="גננת"> </v-switch>
@@ -327,14 +333,14 @@ function calculateKindergarden(
     }
     return 0;
   } else if (kindergardenRole == "ניהול גן (חדשה באופק)") {
-    let optA = kinderLevelComp[level] * mixedCompensationRaw;
+    let optA = kinderLevelComp[Math.min(level, length(kinderLevelComp))] * mixedCompensationRaw;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
     return optA;
   } else if (kindergardenRole == "ניהול גן (ותיקה באופק)") {
     let optA =
-      kinderSeniorityComp[kindergardenSeniority] * mixedCompensationRaw;
+      kinderSeniorityComp[Math.min(kindergardenSeniority, length(kinderSeniorityComp))] * mixedCompensationRaw;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
@@ -516,6 +522,16 @@ export default {
       "ניהול אשכול",
     ],
     kindergardenSeniority: 0,
+    percentageRules: [
+      v => !!v  || 'שדה חובה',
+      v => (v && v > 0 && v <= 150) || 'אחוז משרה צריך להיות בין 1-150',
+    ],
+    specialEdPercentageRules: [
+      v => (v && v > 0 && v <= 100) || 'אחוז משרה צריך להיות בין 1-100',
+    ],
+    roleRules: [
+      v => v.length <= 2 || 'לא ניתן לבחור יותר משתי תפקידים',
+    ]
   }),
   computed: {
     headers() {
