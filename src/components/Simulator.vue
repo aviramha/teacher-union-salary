@@ -51,7 +51,7 @@
             label="תפקידים"
             multiple
             counter="2"
-            :rules="rolesRules"
+            :rules="roleRules"
           ></v-select>
           <v-switch v-model="isSpecialEducation" label="חינוך מיוחד">
           </v-switch>
@@ -118,40 +118,38 @@
         </v-form>
       </v-col>
     </v-row>
-      <v-container fluid>
-        <v-data-iterator :items="compensations" hide-default-footer>
-    <v-row justify="center" class="text-center" align="center">
-              <v-col
-                v-for="(item, index) in compensations"
-                :key="index"
-                md="4"
-                align-self="center"
-                sm="auto"
-              >
-                <v-card>
-                  <v-card-title class="subheading font-weight-bold">
-                    {{ item.jewishYear }}
-                  </v-card-title>
+    <v-container fluid>
+      <v-data-iterator :items="compensations" hide-default-footer>
+        <v-row justify="center" class="text-center" align="center">
+          <v-col
+            v-for="(item, index) in compensations"
+            :key="index"
+            md="4"
+            align-self="center"
+            sm="auto"
+          >
+            <v-card>
+              <v-card-title class="subheading font-weight-bold">
+                {{ item.jewishYear }}
+              </v-card-title>
 
-                  <v-divider></v-divider>
+              <v-divider></v-divider>
 
-                  <v-list dense>
-                    <template v-for="(header, index) in headers">
-                      <v-list-item :key="index">
-                        <v-list-item-content>{{
-                          header.text
-                        }}</v-list-item-content>
-                        <v-list-item-content class="align-end">
-                          {{ item[header.value] }}
-                        </v-list-item-content>
-                      </v-list-item>
-                    </template>
-                  </v-list>
-                </v-card>
-              </v-col>
-            </v-row>
-        </v-data-iterator>
-      </v-container>
+              <v-list dense>
+                <template v-for="(header, index) in headers">
+                  <v-list-item :key="index">
+                    <v-list-item-content>{{ header.text }}</v-list-item-content>
+                    <v-list-item-content class="align-end">
+                      {{ item[header.value] }}
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-list>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-data-iterator>
+    </v-container>
   </v-container>
 </template>
 
@@ -333,14 +331,18 @@ function calculateKindergarden(
     }
     return 0;
   } else if (kindergardenRole == "ניהול גן (חדשה באופק)") {
-    let optA = kinderLevelComp[Math.min(level - 1, length(kinderLevelComp) - 1)] * mixedCompensationRaw;
+    let optA =
+      kinderLevelComp[Math.min(level - 1, kinderLevelComp.length - 1)] *
+      mixedCompensationRaw;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
     return optA;
   } else if (kindergardenRole == "ניהול גן (ותיקה באופק)") {
     let optA =
-      kinderSeniorityComp[Math.min(kindergardenSeniority - 1, length(kinderSeniorityComp) - 1)] * mixedCompensationRaw;
+      kinderSeniorityComp[
+        Math.min(kindergardenSeniority - 1, kinderSeniorityComp.length - 1)
+      ] * mixedCompensationRaw;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
@@ -383,16 +385,15 @@ function calculateSalary(
   }
   addition *= percentage;
 
-  let mixedCompensationRaw = Math.round(
+  let mixedCompensationRaw =
     base *
-      (1 + level_7_5) ** (level - 1) *
-      (1 + seniority_2) ** Math.min(seniority2Years - 1, seniority - 1) *
-      (1 + seniority_1) **
-        Math.min(
-          seniority1Year - seniority2Years,
-          Math.max(0, seniority - seniority2Years)
-        )
-  );
+    (1 + level_7_5) ** (level - 1) *
+    (1 + seniority_2) ** Math.min(seniority2Years - 1, seniority - 1) *
+    (1 + seniority_1) **
+      Math.min(
+        seniority1Year - seniority2Years,
+        Math.max(0, seniority - seniority2Years)
+      );
 
   let mixedCompensation = mixedCompensationRaw * percentage;
   var roleCompensation1 = calcRoleCompensation(
@@ -446,7 +447,7 @@ function calculateSalary(
     );
   }
   let data = {
-    mixedCompensation: mixedCompensation,
+    mixedCompensation: Math.round(mixedCompensation),
     shiklitAddition: Math.round(levelShiklit[level - 1] * percentage),
     twentytwoAddition: Math.round(addition),
     phoneReimbursement: Math.round(percentage * 48.6),
@@ -488,6 +489,13 @@ export default {
       this.kindergardenSeniority = 0;
     },
   },
+  watch: {
+    chosenRoles(newValue) {
+      if (newValue.length > 2) {
+        newValue.pop();
+      }
+    },
+  },
   data: () => ({
     valid: true,
     degrees: ["תואר ראשון", "תואר שני"],
@@ -523,15 +531,13 @@ export default {
     ],
     kindergardenSeniority: 0,
     percentageRules: [
-      v => !!v  || 'שדה חובה',
-      v => (v && v > 0 && v <= 150) || 'אחוז משרה צריך להיות בין 1-150',
+      (v) => !!v || "שדה חובה",
+      (v) => (v && v > 0 && v <= 150) || "אחוז משרה צריך להיות בין 1-150",
     ],
     specialEdPercentageRules: [
-      v => (v && v > 0 && v <= 100) || 'אחוז משרה צריך להיות בין 1-100',
+      (v) => (v && v > 0 && v <= 100) || "אחוז משרה צריך להיות בין 1-100",
     ],
-    roleRules: [
-      v => v.length <= 2 || 'לא ניתן לבחור יותר משתי תפקידים',
-    ]
+    roleRules: [(v) => v.length <= 2 || "לא ניתן לבחור יותר משתי תפקידים"],
   }),
   computed: {
     headers() {
