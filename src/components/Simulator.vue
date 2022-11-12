@@ -333,14 +333,14 @@ function calculateKindergarden(
     }
     return 0;
   } else if (kindergardenRole == "ניהול גן (חדשה באופק)") {
-    let optA = kinderLevelComp[Math.min(level, length(kinderLevelComp))] * mixedCompensationRaw;
+    let optA = kinderLevelComp[Math.min(level - 1, length(kinderLevelComp) - 1)] * mixedCompensationRaw;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
     return optA;
   } else if (kindergardenRole == "ניהול גן (ותיקה באופק)") {
     let optA =
-      kinderSeniorityComp[Math.min(kindergardenSeniority, length(kinderSeniorityComp))] * mixedCompensationRaw;
+      kinderSeniorityComp[Math.min(kindergardenSeniority - 1, length(kinderSeniorityComp) - 1)] * mixedCompensationRaw;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
