@@ -24,7 +24,7 @@
             v-model="level"
             type="number"
             min="1"
-            max="36"
+            max="9"
             label="דרגה אופק חדש"
             required
           ></v-text-field>
