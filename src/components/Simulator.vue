@@ -241,10 +241,10 @@ function calcRoleCompensation(
   }
   let salary = mixedCompensation + twentytwoAddition;
   if (year == "תשפ״ב" || year == "תשפ״ג") {
-    return salary * roleCompensationLastYear[role] * percentage;
+    return salary * roleCompensationLastYear[role];
   } else if (year == "תשפ״ד") {
     return Math.max(
-      salary * roleCompensationThisYearPercentage[role] * percentage,
+      salary * roleCompensationThisYearPercentage[role],
       roleCompensationNextSum[role]
     );
   }
@@ -262,7 +262,7 @@ function calculateHinuch(
   if (year == "תשפ״ד") {
     comp = Math.max(comp, finiteCompHinuch);
   }
-  return comp * percentage;
+  return comp;
 }
 
 // All are percentages
@@ -320,20 +320,20 @@ function calculateKindergarden(
   kindergardenSeniority,
   level,
   percentage,
-  mixedCompensationRaw,
+  base,
   year
 ) {
   if (kindergardenRole == "ניהול אשכול") {
-    return 0.25 * mixedCompensationRaw;
+    return 0.25 * base;
   } else if (kindergardenRole == "גננת משלימה זכאית") {
     if (year == "תשפ״ד") {
-      return 0.1 * mixedCompensationRaw * percentage;
+      return 0.1 * base * percentage;
     }
     return 0;
   } else if (kindergardenRole == "ניהול גן (חדשה באופק)") {
     let optA =
       kinderLevelComp[Math.min(level - 1, kinderLevelComp.length - 1)] *
-      mixedCompensationRaw;
+      base;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
@@ -342,7 +342,7 @@ function calculateKindergarden(
     let optA =
       kinderSeniorityComp[
         Math.min(kindergardenSeniority - 1, kinderSeniorityComp.length - 1)
-      ] * mixedCompensationRaw;
+      ] * base;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
@@ -442,7 +442,7 @@ function calculateSalary(
       kindergardenSeniority,
       level,
       percentage,
-      mixedCompensationRaw,
+      base,
       jewishYear
     );
   }
