@@ -13,9 +13,18 @@
                 <a class="app-link" href="https://www.morimovilim.org/"
                   >מורים מובילים שינוי</a
                 >
+                <p>
+                  <a
+                    class="app-link"
+                    href="https://pay.sumit.co.il/2fwesp/2fwfte/"
+                  >
+                    לתרומות לארגון מוריים מובילים שינוי לחצו כאן
+                  </a>
+                </p>
               </v-card-subtitle>
               <v-card-text
-                >זהו סימולטור שכר לשנים תשפ״ב, תשפ״ג, תשפ״ד לעובדי/ות הוראה ברפורמת אופק חדש</v-card-text
+                >זהו סימולטור שכר לשנים תשפ״ב, תשפ״ג, תשפ״ד לעובדי/ות הוראה
+                ברפורמת אופק חדש</v-card-text
               >
             </v-card>
           </v-col>
@@ -24,21 +33,15 @@
       <Simulator />
     </v-main>
     <v-footer dark padless>
-        <p>
-          אתר זה פותח כתרומה עבור ארגון
-          <a class="app-link" href="https://www.morimovilim.org/"
-            >מורים מובילים שינוי</a
-          >
-          האתר ניתן ללא אחריות מצד התורם/מפתח, הארגון או השולח וניתן לציבור
-          בחינם.
-        </p>
-        <p>
-          <a class="app-link" href="https://pay.sumit.co.il/2fwesp/2fwfte/">
-          לתרומות לארגון מוריים מובילים שינוי לחצו כאן
-          </a>
-        </p>
-        <v-divider></v-divider>
-      </v-footer>
+      <p>
+        אתר זה פותח כתרומה עבור ארגון
+        <a class="app-link" href="https://www.morimovilim.org/"
+          >מורים מובילים שינוי</a
+        >
+        האתר ניתן ללא אחריות מצד התורם/מפתח, הארגון או השולח וניתן לציבור בחינם.
+      </p>
+      <v-divider></v-divider>
+    </v-footer>
   </v-app>
 </template>
 
