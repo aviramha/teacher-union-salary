@@ -32,6 +32,11 @@
           האתר ניתן ללא אחריות מצד התורם/מפתח, הארגון או השולח וניתן לציבור
           בחינם.
         </p>
+        <p>
+          <a class="app-link" href="https://pay.sumit.co.il/2fwesp/2fwfte/">
+          לתרומות לארגון מוריים מובילים שינוי לחצו כאן
+          </a>
+        </p>
         <v-divider></v-divider>
       </v-footer>
   </v-app>
