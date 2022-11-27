@@ -438,6 +438,7 @@ function calculateSalary(
     );
   }
   var kindergardenCompensation = 0;
+  let shiklitAddition = Math.round(levelShiklit[level - 1] * percentage);
   if (isGanenet) {
     kindergardenCompensation = calculateKindergarden(
       kindergardenRole,
@@ -451,7 +452,7 @@ function calculateSalary(
   }
   let data = {
     mixedCompensation: Math.round(mixedCompensation),
-    shiklitAddition: Math.round(levelShiklit[level - 1] * percentage),
+    shiklitAddition: Math.round(shiklitAddition),
     twentytwoAddition: Math.round(addition),
     phoneReimbursement: Math.round(percentage * 48.6),
     hinuchCompensation: Math.round(hinuchCompensation),
