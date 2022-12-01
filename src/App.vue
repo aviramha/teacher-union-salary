@@ -18,7 +18,7 @@
                     class="app-link"
                     href="https://pay.sumit.co.il/2fwesp/2fwfte/"
                   >
-                    לתרומות לארגון מוריים מובילים שינוי לחצו כאן
+                    לתרומות לארגון מורים מובילים שינוי לחצו כאן
                   </a>
                 </p>
               </v-card-subtitle>
