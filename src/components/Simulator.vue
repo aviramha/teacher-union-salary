@@ -403,14 +403,14 @@ function calculateSalary(
     roles[0] || "ללא",
     percentage,
     addition,
-    mixedCompensation
+    mixedCompensationRaw
   );
   var roleCompensation2 = calcRoleCompensation(
     jewishYear,
     roles[1] || "ללא",
     percentage,
     addition,
-    mixedCompensation
+    mixedCompensationRaw
   );
 
   var hinuchCompensation = 0;
