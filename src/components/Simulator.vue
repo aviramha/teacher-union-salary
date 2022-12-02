@@ -416,7 +416,6 @@ function calculateSalary(
   if (hinuchComp != "ללא") {
     let hinuchVariable = hinuchComp == "כיתה א׳" ? hinuchA : hinuchRest;
     hinuchCompensation = calculateHinuch(
-      percentage,
       addition,
       mixedCompensationRaw,
       jewishYear,
