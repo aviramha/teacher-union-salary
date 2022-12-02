@@ -251,13 +251,12 @@ function calcRoleCompensation(
 }
 
 function calculateHinuch(
-  percentage,
   twentytwoAddition,
-  mixedCompensation,
+  mixedCompensationRaw,
   year,
   hinuch
 ) {
-  let salary = mixedCompensation + twentytwoAddition;
+  let salary = mixedCompensationRaw + twentytwoAddition;
   var comp = salary * hinuch;
   if (year == "תשפ״ד") {
     comp = Math.max(comp, finiteCompHinuch);
@@ -419,7 +418,7 @@ function calculateSalary(
     hinuchCompensation = calculateHinuch(
       percentage,
       addition,
-      mixedCompensation,
+      mixedCompensationRaw,
       jewishYear,
       hinuchVariable
     );
@@ -445,7 +444,7 @@ function calculateSalary(
       kindergardenSeniority,
       level,
       percentage,
-      base,
+      mixedCompensationRaw,
       jewishYear,
       shiklitAddition
     );
