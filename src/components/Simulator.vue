@@ -104,7 +104,7 @@
             <v-text-field
               v-if="kindergardenRole == 'ניהול גן (ותיקה באופק)'"
               type="number"
-              min="0"
+              min="1"
               max="10"
               v-model="kindergardenSeniority"
               label="וותק בניהול"
@@ -251,13 +251,12 @@ function calcRoleCompensation(
 }
 
 function calculateHinuch(
-  percentage,
   twentytwoAddition,
-  mixedCompensation,
+  mixedCompensationRaw,
   year,
   hinuch
 ) {
-  let salary = mixedCompensation + twentytwoAddition;
+  let salary = mixedCompensationRaw + twentytwoAddition;
   var comp = salary * hinuch;
   if (year == "תשפ״ד") {
     comp = Math.max(comp, finiteCompHinuch);
@@ -370,23 +369,23 @@ function calculateSalary(
   kindergardenSeniority
 ) {
   var base;
-  var addition;
+  var additionRaw;
   if (jewishYear == "תשפ״ב") {
     base = thisJewishYearBases[degree];
-    addition = 0;
+    additionRaw = 0;
   } else {
     base = nextJewishYearBases[degree];
     if (degree == "תואר ראשון") {
-      addition = firstDegreeAddition[level - 1];
+      additionRaw = firstDegreeAddition[level - 1];
     } else {
-      addition = secondDegreeAddition[level - 1];
+      additionRaw = secondDegreeAddition[level - 1];
     }
   }
   if (jewishYear == "תשפ״ג") {
-    addition /= 2;
+    additionRaw /= 2;
   }
-  addition *= percentage;
-
+  var addition = additionRaw * percentage;
+  
   let mixedCompensationRaw =
     base *
     (1 + level_7_5) ** (level - 1) *
@@ -402,24 +401,23 @@ function calculateSalary(
     jewishYear,
     roles[0] || "ללא",
     percentage,
-    addition,
-    mixedCompensation
+    additionRaw,
+    mixedCompensationRaw
   );
   var roleCompensation2 = calcRoleCompensation(
     jewishYear,
     roles[1] || "ללא",
     percentage,
-    addition,
-    mixedCompensation
+    additionRaw,
+    mixedCompensationRaw
   );
 
   var hinuchCompensation = 0;
   if (hinuchComp != "ללא") {
     let hinuchVariable = hinuchComp == "כיתה א׳" ? hinuchA : hinuchRest;
     hinuchCompensation = calculateHinuch(
-      percentage,
-      addition,
-      mixedCompensation,
+      additionRaw,
+      mixedCompensationRaw,
       jewishYear,
       hinuchVariable
     );
@@ -445,9 +443,9 @@ function calculateSalary(
       kindergardenSeniority,
       level,
       percentage,
-      base,
+      mixedCompensationRaw,
       jewishYear,
-      shiklitAddition
+      additionRaw
     );
   }
   let data = {
