@@ -114,9 +114,7 @@
             ></v-text-field>
           </v-container>
           <v-btn :disabled="!valid" color="success" class="mr-4"> חשב </v-btn>
-          <v-btn @click="reset" :disabled="!valid" color="warning" class="mr-4">
-            אפס
-          </v-btn>
+          <v-btn @click="reset" color="warning" class="mr-4"> אפס </v-btn>
         </v-form>
       </v-col>
     </v-row>
