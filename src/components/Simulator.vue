@@ -19,6 +19,7 @@
             max="36"
             label="וותק אופק חדש"
             required
+            :rules="seniorityRules"
           ></v-text-field>
           <v-text-field
             v-model="level"
@@ -27,6 +28,7 @@
             max="9"
             label="דרגה אופק חדש"
             required
+            :rules="levelRules"
           ></v-text-field>
 
           <v-select
@@ -229,10 +231,13 @@ const hinuchRest = 10 / 100;
 // same for both options (א-ט׳)
 const finiteCompHinuch = 1000;
 
+function limitValue(value, lowerBound, upperBound) {
+  return Math.min(Math.max(value, lowerBound), upperBound);
+}
+
 function calcRoleCompensation(
   year,
   role,
-  percentage,
   twentytwoAddition,
   mixedCompensation
 ) {
@@ -333,22 +338,14 @@ function calculateKindergarden(
     return 0;
   } else if (kindergardenRole == "ניהול גן (חדשה באופק)") {
     let optA =
-      kinderLevelComp[
-        Math.min(
-          Math.max(level - 1, 0), 
-          kinderLevelComp.length - 1)
-        ] * calcBase;
+      kinderLevelComp[level - 1] * calcBase;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
     return optA;
   } else if (kindergardenRole == "ניהול גן (ותיקה באופק)") {
     let optA =
-      kinderSeniorityComp[
-        Math.min(
-          Math.max(kindergardenSeniority - 1, 0), 
-          kinderSeniorityComp.length - 1)
-      ] * calcBase;
+      kinderSeniorityComp[kindergardenSeniority - 1] * calcBase;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
@@ -405,14 +402,12 @@ function calculateSalary(
   var roleCompensation1 = calcRoleCompensation(
     jewishYear,
     roles[0] || "ללא",
-    percentage,
     additionRaw,
     mixedCompensationRaw
   );
   var roleCompensation2 = calcRoleCompensation(
     jewishYear,
     roles[1] || "ללא",
-    percentage,
     additionRaw,
     mixedCompensationRaw
   );
@@ -457,7 +452,7 @@ function calculateSalary(
     mixedCompensation: Math.round(mixedCompensation),
     shiklitAddition: Math.round(shiklitAddition),
     twentytwoAddition: Math.round(addition),
-    phoneReimbursement: Math.round(percentage * 48.6),
+    phoneReimbursement: Math.round(limitValue(percentage, 0.01, 1) * 48.6),
     hinuchCompensation: Math.round(hinuchCompensation),
     roleCompensation1: Math.round(roleCompensation1),
     roleCompensation2: Math.round(roleCompensation2),
@@ -544,7 +539,13 @@ export default {
     specialEdPercentageRules: [
       (v) => (v && v >= 0 && v <= 100) || "אחוז משרה צריך להיות בין 0-100",
     ],
-    roleRules: [(v) => v.length <= 2 || "לא ניתן לבחור יותר משתי תפקידים"],
+    levelRules: [
+      (v) => (v && v >= 1 && v <= 9) || "דרגה בין 1 ל-9",
+    ],
+    seniorityRules: [
+      (v) => (v && v >= 1 && v <= 36) || "ותק בין 1 ל-36",
+    ],
+    roleRules: [(v) => v.length <= 2 || "לא ניתן לבחור יותר משני תפקידים"],
   }),
   computed: {
     headers() {
@@ -564,7 +565,13 @@ export default {
       ];
     },
     compensations() {
-      let percentage = this.percentage / 100;
+      let percentage = limitValue(this.percentage, 1, 150) / 100.0;
+      let level = limitValue(this.level, 1, 9);
+      let kindergardenSeniority = limitValue(this.kindergardenSeniority, 1, 10);
+      let schoolSpecialEdPercentage = limitValue(this.schoolSpecialEdPercentage, 0, 100);
+      let schoolExtraSpecialEdPercentage = limitValue(this.schoolExtraSpecialEdPercentage, 0, 100);
+      let matyaSpecialEdPercentage = limitValue(this.matyaSpecialEdPercentage, 0, 100);
+      let matyaExtraSpecialEdPercentage = limitValue(this.matyaExtraSpecialEdPercentage, 0, 100);
       return [
         calculateSalary(
           this.degree,
@@ -572,16 +579,16 @@ export default {
           this.chosenRoles,
           percentage,
           this.seniority,
-          this.level,
-          this.schoolSpecialEdPercentage,
-          this.schoolExtraSpecialEdPercentage,
-          this.matyaSpecialEdPercentage,
-          this.matyaExtraSpecialEdPercentage,
+          level,
+          schoolSpecialEdPercentage,
+          schoolExtraSpecialEdPercentage,
+          matyaSpecialEdPercentage,
+          matyaExtraSpecialEdPercentage,
           this.isSpecialEducation,
           "תשפ״ב",
           this.isGanenet,
           this.kindergardenRole,
-          this.kindergardenSeniority
+          kindergardenSeniority
         ),
         calculateSalary(
           this.degree,
@@ -589,16 +596,16 @@ export default {
           this.chosenRoles,
           percentage,
           this.seniority,
-          this.level,
-          this.schoolSpecialEdPercentage,
-          this.schoolExtraSpecialEdPercentage,
-          this.matyaSpecialEdPercentage,
-          this.matyaExtraSpecialEdPercentage,
+          level,
+          schoolSpecialEdPercentage,
+          schoolExtraSpecialEdPercentage,
+          matyaSpecialEdPercentage,
+          matyaExtraSpecialEdPercentage,
           this.isSpecialEducation,
           "תשפ״ג",
           this.isGanenet,
           this.kindergardenRole,
-          this.kindergardenSeniority
+          kindergardenSeniority
         ),
         calculateSalary(
           this.degree,
@@ -606,16 +613,16 @@ export default {
           this.chosenRoles,
           percentage,
           this.seniority,
-          this.level,
-          this.schoolSpecialEdPercentage,
-          this.schoolExtraSpecialEdPercentage,
-          this.matyaSpecialEdPercentage,
-          this.matyaExtraSpecialEdPercentage,
+          level,
+          schoolSpecialEdPercentage,
+          schoolExtraSpecialEdPercentage,
+          matyaSpecialEdPercentage,
+          matyaExtraSpecialEdPercentage,
           this.isSpecialEducation,
           "תשפ״ד",
           this.isGanenet,
           this.kindergardenRole,
-          this.kindergardenSeniority
+          kindergardenSeniority
         ),
       ];
     },
