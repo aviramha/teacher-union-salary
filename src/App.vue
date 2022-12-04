@@ -1,4 +1,4 @@
-<template>
+<template class="{backgroud-color: #ECEAE1;}">
   <v-app>
     <v-main>
       <v-container>
@@ -9,10 +9,8 @@
                 >סימולטור שכר</v-card-title
               >
               <v-card-subtitle
-                >מידע זה ניתן בחינם, ללא ערבות ואחריות על ידי ארגון
-                <a class="app-link" href="https://www.morimovilim.org/"
-                  >מורים מובילים שינוי</a
-                >
+                >מידע זה ניתן בחינם, ללא ערבות ואחריות על ידי
+                <br/><img href="https://www.morimovilim.org/" src="https://static.wixstatic.com/media/3c6951_dc81c8fac20a496599ed73975e468c7b~mv2.png/v1/crop/x_31,y_64,w_428,h_322/fill/w_248,h_186,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/%D7%9E%D7%95%D7%A8%D7%99%D7%9D%20%D7%9E%D7%95%D7%91%D7%99%D7%9C%D7%99%D7%9D%20%D7%9C%D7%A9%D7%99%D7%A0%D7%95%D7%99%20(3).png" />
                 <p>
                   <a
                     class="app-link"
