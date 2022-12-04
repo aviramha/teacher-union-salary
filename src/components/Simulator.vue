@@ -351,6 +351,7 @@ function calculateKindergarden(
     }
     return optA;
   }
+  return 0;
 }
 
 function calculateSalary(
@@ -566,6 +567,7 @@ export default {
     },
     compensations() {
       let percentage = limitValue(this.percentage, 1, 150) / 100.0;
+      let seniority = limitValue(this.seniority, 1, 36);
       let level = limitValue(this.level, 1, 9);
       let kindergardenSeniority = limitValue(this.kindergardenSeniority, 1, 10);
       let schoolSpecialEdPercentage = limitValue(this.schoolSpecialEdPercentage, 0, 100);
@@ -578,7 +580,7 @@ export default {
           this.hinuchComp,
           this.chosenRoles,
           percentage,
-          this.seniority,
+          seniority,
           level,
           schoolSpecialEdPercentage,
           schoolExtraSpecialEdPercentage,
@@ -595,7 +597,7 @@ export default {
           this.hinuchComp,
           this.chosenRoles,
           percentage,
-          this.seniority,
+          seniority,
           level,
           schoolSpecialEdPercentage,
           schoolExtraSpecialEdPercentage,
@@ -612,7 +614,7 @@ export default {
           this.hinuchComp,
           this.chosenRoles,
           percentage,
-          this.seniority,
+          seniority,
           level,
           schoolSpecialEdPercentage,
           schoolExtraSpecialEdPercentage,
