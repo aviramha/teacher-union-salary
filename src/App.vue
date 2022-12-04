@@ -1,18 +1,19 @@
 <template>
-  <v-app>
+  <v-app style="background: #ECEAE1;">
     <v-main>
       <v-container>
         <v-row justify="center" class="text-center" align="center">
           <v-col cols="12" align-self="center">
-            <v-card>
-              <v-card-title justify="center" class="text-center" align="center"
+            <v-card style="background: #ECEAE1;">
+              <v-card-title class="justify-center"
                 >סימולטור שכר</v-card-title
               >
-              <v-card-subtitle
-                >מידע זה ניתן בחינם, ללא ערבות ואחריות על ידי ארגון
-                <a class="app-link" href="https://www.morimovilim.org/"
-                  >מורים מובילים שינוי</a
-                >
+              <v-card-subtitle 
+                >מידע זה ניתן בחינם, ללא ערבות ואחריות על ידי
+                <br/>
+                <a href="https://www.morimovilim.org/"><img src="/logo.webp" />
+                  <br/>לאתר מורים מובילים שינוי לחץ כאן
+                </a>
                 <p>
                   <a
                     class="app-link"
