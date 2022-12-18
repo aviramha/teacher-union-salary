@@ -95,6 +95,28 @@
               :rules="specialEdPercentageRules"
             ></v-text-field>
           </v-container>
+          <v-switch v-model="isGiftedEducation" label="חינוך מחוננים">
+          </v-switch>
+          <v-container v-if="isGiftedEducation">
+            <v-text-field
+              v-model="schoolGiftedEdPercentage"
+              type="number"
+              min="0"
+              max="100"
+              label="% משרה חנ״מ בבי״ס"
+              required
+              :rules="specialEdPercentageRules"
+            ></v-text-field>
+            <v-text-field
+              v-model="schoolExtraGiftedEdPercentage"
+              type="number"
+              min="0"
+              max="100"
+              label="% משרה חנ״מ בבי״ס אוטיזם / הפרעות נפשיות קשות"
+              required
+              :rules="specialEdPercentageRules"
+            ></v-text-field>
+          </v-container>
           <v-switch v-model="isGanenet" label="גננת"> </v-switch>
           <v-container v-if="isGanenet">
             <v-select
@@ -323,6 +345,35 @@ function calculateSpecialEd(
   }
 }
 
+function calculateGiftedEd(
+  school,
+  extraSchool,
+  twentytwoAddition,
+  mixedCompensation,
+  year
+) {
+  let salary = mixedCompensation + twentytwoAddition;
+  const schoolBonusThisYear = 14 / 100;
+  // תשפ״ד
+  const schoolBonusNextYear = 15 / 100;
+
+  const extraSchoolBonusThisYear = 14 / 100;
+  // תשפ״ד
+  const extraSchoolBonusNextYear = 17 / 100;
+
+  if (year != "תשפ״ד") {
+    return (
+      salary * schoolBonusThisYear * school +
+      salary * extraSchoolBonusThisYear * extraSchool
+    );
+  } else {
+    return (
+      salary * schoolBonusNextYear * school +
+      salary * extraSchoolBonusNextYear * extraSchool
+    );
+  }
+}
+
 const kinderLevelComp = [0.17, 0.17, 0.2, 0.2, 0.21, 0.21, 0.21, 0.21, 0.21];
 
 const kinderSeniorityComp = [
@@ -374,6 +425,9 @@ function calculateSalary(
   matyaSpecialEdPercentage,
   matyaExtraSpecialEdPercentage,
   isSpecialEducation,
+  schoolGiftedEdPercentage,
+  schoolExtraGiftedEdPercentage,
+  isGiftedEducation,
   jewishYear,
   isGanenet,
   kindergardenRole,
@@ -444,6 +498,16 @@ function calculateSalary(
       jewishYear
     );
   }
+  var giftedEdComp = 0;
+  if (isGiftedEducation) {
+    giftedEdComp = calculateGiftedEd(
+      schoolGiftedEdPercentage / 100,
+      schoolExtraGiftedEdPercentage / 100,
+      addition,
+      mixedCompensation,
+      jewishYear
+    );
+  }
   var kindergardenCompensation = 0;
   let shiklitAddition = Math.round(levelShiklit[level - 1] * percentage);
   if (isGanenet) {
@@ -466,6 +530,7 @@ function calculateSalary(
     roleCompensation1: Math.round(roleCompensation1),
     roleCompensation2: Math.round(roleCompensation2),
     specialEducationCompensation: Math.round(specialEdComp),
+    giftedEducationCompensation: Math.round(giftedEdComp),
     kindergardenCompensation: Math.round(kindergardenCompensation),
   };
   const values = Object.values(data);
@@ -490,10 +555,13 @@ export default {
       this.hinuchComp = "ללא";
       this.chosenRoles = [];
       this.isSpecialEducation = false;
+      this.isGiftedEducation = false;
       this.schoolSpecialEdPercentage = 0;
       this.schoolExtraSpecialEdPercentage = 0;
       this.matyaSpecialEdPercentage = 0;
       this.matyaExtraSpecialEdPercentage = 0;
+      this.schoolGiftedEdPercentage = 0;
+      this.schoolExtraGiftedEdPercentage = 0;
       this.jewishYear = "תשפ״ב";
       this.kindergardenRole = null;
       this.isGanenet = false;
@@ -532,10 +600,13 @@ export default {
     seniority: 1,
     level: 1,
     isSpecialEducation: false,
+    isGiftedEducation: false,
     schoolSpecialEdPercentage: 0,
     schoolExtraSpecialEdPercentage: 0,
     matyaSpecialEdPercentage: 0,
     matyaExtraSpecialEdPercentage: 0,
+    schoolGiftedEdPercentage: 0,
+    schoolExtraGiftedEdPercentage: 0,
     isGanenet: false,
     kindergardenRole: null,
     kindergardenRoles: [
@@ -569,6 +640,7 @@ export default {
         { text: "גמול תפקיד " + role1, value: "roleCompensation1" },
         { text: "גמול תפקיד " + role2, value: "roleCompensation2" },
         { text: "גמול חנ״מ", value: "specialEducationCompensation" },
+        { text: "גמול חינוך מחוננים", value: "giftedEducationCompensation" },
         { text: "גמול גננות", value: "kindergardenCompensation" },
         { text: "סה״כ ברוטו", value: "totalCompensation" },
       ];
@@ -598,6 +670,16 @@ export default {
         0,
         100
       );
+      let schoolGiftedEdPercentage = limitValue(
+        this.schoolGiftedEdPercentage,
+        0,
+        100
+      );
+      let schoolExtraGiftedEdPercentage = limitValue(
+        this.schoolExtraGiftedEdPercentage,
+        0,
+        100
+      );
       return [
         calculateSalary(
           this.degree,
@@ -610,7 +692,10 @@ export default {
           schoolExtraSpecialEdPercentage,
           matyaSpecialEdPercentage,
           matyaExtraSpecialEdPercentage,
+          schoolGiftedEdPercentage,
+          schoolExtraGiftedEdPercentage,
           this.isSpecialEducation,
+          this.isGiftedEducation,
           "תשפ״ב",
           this.isGanenet,
           this.kindergardenRole,
@@ -627,7 +712,10 @@ export default {
           schoolExtraSpecialEdPercentage,
           matyaSpecialEdPercentage,
           matyaExtraSpecialEdPercentage,
+          schoolGiftedEdPercentage,
+          schoolExtraGiftedEdPercentage,
           this.isSpecialEducation,
+          this.isGiftedEducation,
           "תשפ״ג",
           this.isGanenet,
           this.kindergardenRole,
@@ -644,7 +732,10 @@ export default {
           schoolExtraSpecialEdPercentage,
           matyaSpecialEdPercentage,
           matyaExtraSpecialEdPercentage,
+          schoolGiftedEdPercentage,
+          schoolExtraGiftedEdPercentage,
           this.isSpecialEducation,
+          this.isGiftedEducation,
           "תשפ״ד",
           this.isGanenet,
           this.kindergardenRole,
