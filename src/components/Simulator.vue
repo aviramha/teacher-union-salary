@@ -193,6 +193,9 @@ const roleCompensationLastYear = {
   "סגנות שניה ומעלה": 13 / 100,
   "ניהול חטיבה צעירה": 13 / 100,
   "ריכוז אחר (6%)": 6 / 100,
+  "ריכוז מקצוע חט״ב": 6 / 100,
+  "רכז ליקויי למידה": 4 / 100,
+  "ריכוז מעבדה": 3 / 100,
 };
 
 // as far as I understand they take either finite sum or percentage based on max
@@ -206,6 +209,9 @@ const roleCompensationThisYearPercentage = {
   "סגנות שניה ומעלה": 20 / 100,
   "ניהול חטיבה צעירה": 20 / 100,
   "ריכוז אחר (6%)": 6 / 100,
+  "ריכוז מקצוע חט״ב": 6 / 100,
+  "רכז ליקויי למידה": 4 / 100,
+  "ריכוז מעבדה": 3 / 100,
 };
 
 // תשפ״ד
@@ -218,6 +224,9 @@ const roleCompensationNextSum = {
   "סגנות שניה ומעלה": 1100,
   "ניהול חטיבה צעירה": 1100,
   "ריכוז אחר (6%)": 0,
+  "ריכוז מקצוע חט״ב": 0,
+  "רכז ליקויי למידה": 0,
+  "ריכוז מעבדה": 0,
 };
 
 // כיתה א׳
@@ -335,15 +344,13 @@ function calculateKindergarden(
     }
     return 0;
   } else if (kindergardenRole == "ניהול גן (חדשה באופק)") {
-    let optA =
-      kinderLevelComp[level - 1] * calcBase;
+    let optA = kinderLevelComp[level - 1] * calcBase;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
     return optA;
   } else if (kindergardenRole == "ניהול גן (ותיקה באופק)") {
-    let optA =
-      kinderSeniorityComp[kindergardenSeniority - 1] * calcBase;
+    let optA = kinderSeniorityComp[kindergardenSeniority - 1] * calcBase;
     if (year == "תשפ״ד") {
       return Math.max(optA, 1500);
     }
@@ -386,7 +393,7 @@ function calculateSalary(
     additionRaw /= 2;
   }
   var addition = additionRaw * percentage;
-  
+
   let mixedCompensationRaw =
     base *
     (1 + level_7_5) ** (level - 1) *
@@ -512,6 +519,9 @@ export default {
       "סגנות שניה ומעלה",
       "ניהול חטיבה צעירה",
       "ריכוז אחר (6%)",
+      "ריכוז מקצוע חט״ב",
+      "רכז ליקויי למידה",
+      "ריכוז מעבדה",
     ],
     chosenRoles: [],
     percentage: 100,
@@ -538,12 +548,8 @@ export default {
     specialEdPercentageRules: [
       (v) => (v && v >= 0 && v <= 100) || "אחוז משרה צריך להיות בין 0-100",
     ],
-    levelRules: [
-      (v) => (v && v >= 1 && v <= 9) || "דרגה בין 1 ל-9",
-    ],
-    seniorityRules: [
-      (v) => (v && v >= 1 && v <= 36) || "ותק בין 1 ל-36",
-    ],
+    levelRules: [(v) => (v && v >= 1 && v <= 9) || "דרגה בין 1 ל-9"],
+    seniorityRules: [(v) => (v && v >= 1 && v <= 36) || "ותק בין 1 ל-36"],
     roleRules: [(v) => v.length <= 2 || "לא ניתן לבחור יותר משני תפקידים"],
   }),
   computed: {
@@ -568,10 +574,26 @@ export default {
       let seniority = limitValue(this.seniority, 1, 36);
       let level = limitValue(this.level, 1, 9);
       let kindergardenSeniority = limitValue(this.kindergardenSeniority, 1, 10);
-      let schoolSpecialEdPercentage = limitValue(this.schoolSpecialEdPercentage, 0, 100);
-      let schoolExtraSpecialEdPercentage = limitValue(this.schoolExtraSpecialEdPercentage, 0, 100);
-      let matyaSpecialEdPercentage = limitValue(this.matyaSpecialEdPercentage, 0, 100);
-      let matyaExtraSpecialEdPercentage = limitValue(this.matyaExtraSpecialEdPercentage, 0, 100);
+      let schoolSpecialEdPercentage = limitValue(
+        this.schoolSpecialEdPercentage,
+        0,
+        100
+      );
+      let schoolExtraSpecialEdPercentage = limitValue(
+        this.schoolExtraSpecialEdPercentage,
+        0,
+        100
+      );
+      let matyaSpecialEdPercentage = limitValue(
+        this.matyaSpecialEdPercentage,
+        0,
+        100
+      );
+      let matyaExtraSpecialEdPercentage = limitValue(
+        this.matyaExtraSpecialEdPercentage,
+        0,
+        100
+      );
       return [
         calculateSalary(
           this.degree,
