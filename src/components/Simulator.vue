@@ -103,7 +103,7 @@
               type="number"
               min="0"
               max="100"
-              label="% משרה חנ״מ בבי״ס"
+              label="% משרה מחוננים בבי״ס"
               required
               :rules="specialEdPercentageRules"
             ></v-text-field>
@@ -112,7 +112,7 @@
               type="number"
               min="0"
               max="100"
-              label="% משרה חנ״מ בבי״ס אוטיזם / הפרעות נפשיות קשות"
+              label="% משרה מחוננים אקסטרה"
               required
               :rules="specialEdPercentageRules"
             ></v-text-field>
@@ -692,9 +692,9 @@ export default {
           schoolExtraSpecialEdPercentage,
           matyaSpecialEdPercentage,
           matyaExtraSpecialEdPercentage,
+          this.isSpecialEducation,
           schoolGiftedEdPercentage,
           schoolExtraGiftedEdPercentage,
-          this.isSpecialEducation,
           this.isGiftedEducation,
           "תשפ״ב",
           this.isGanenet,
@@ -712,9 +712,9 @@ export default {
           schoolExtraSpecialEdPercentage,
           matyaSpecialEdPercentage,
           matyaExtraSpecialEdPercentage,
+          this.isSpecialEducation,
           schoolGiftedEdPercentage,
           schoolExtraGiftedEdPercentage,
-          this.isSpecialEducation,
           this.isGiftedEducation,
           "תשפ״ג",
           this.isGanenet,
@@ -732,9 +732,9 @@ export default {
           schoolExtraSpecialEdPercentage,
           matyaSpecialEdPercentage,
           matyaExtraSpecialEdPercentage,
+          this.isSpecialEducation,
           schoolGiftedEdPercentage,
           schoolExtraGiftedEdPercentage,
-          this.isSpecialEducation,
           this.isGiftedEducation,
           "תשפ״ד",
           this.isGanenet,
