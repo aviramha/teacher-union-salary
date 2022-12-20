@@ -122,6 +122,18 @@
               :rules="specialEdPercentageRules"
             ></v-text-field>
           </v-container>
+          <v-switch v-model="isIntern" label="ליווי סטאז׳רים"> </v-switch>
+          <v-container v-if="isIntern">
+            <v-text-field
+              v-model="numberOfStudentsInternship"
+              type="number"
+              min="0"
+              max="3"
+              label="מספר הסטודנטים"
+              required
+              :rules="numberOfStudentsRules"
+            ></v-text-field>
+          </v-container>
           <v-switch v-model="isGanenet" label="גננת"> </v-switch>
           <v-container v-if="isGanenet">
             <v-select
@@ -363,6 +375,20 @@ function calculateSpecialEdNoDiploma(
   }
 }
 
+function calculateAccompanyingInterns(
+  numberOfStudentsInternship,
+  year,
+  twentytwoAddition,
+  mixedCompensation
+) {
+  let salary = mixedCompensation + twentytwoAddition;
+  if (year == "תשפ״ב" || year == "תשפ״ג") {
+    return salary * (2.4 / 100) * numberOfStudentsInternship;
+  } else if (year == "תשפ״ד") {
+    return salary * (2.4 / 100) * numberOfStudentsInternship;
+  }
+}
+
 function calculateGiftedEd(
   school,
   extraSchool,
@@ -449,6 +475,8 @@ function calculateSalary(
   isGiftedEducation,
   jewishYear,
   isGanenet,
+  isIntern,
+  numberOfStudentsInternship,
   kindergardenRole,
   kindergardenSeniority
 ) {
@@ -548,6 +576,15 @@ function calculateSalary(
       additionRaw
     );
   }
+  var internshipComp = 0;
+  if (isIntern) {
+    internshipComp = calculateAccompanyingInterns(
+      numberOfStudentsInternship,
+      jewishYear,
+      addition,
+      mixedCompensation
+    );
+  }
   let data = {
     mixedCompensation: Math.round(mixedCompensation),
     shiklitAddition: Math.round(shiklitAddition),
@@ -559,6 +596,7 @@ function calculateSalary(
     specialEducationCompensation: Math.round(specialEdComp),
     specialEducationNoDiplomaCompensation: Math.round(specialEdNoDiplomaComp),
     giftedEducationCompensation: Math.round(giftedEdComp),
+    accompanyingInterns: Math.round(internshipComp),
     kindergardenCompensation: Math.round(kindergardenCompensation),
   };
   const values = Object.values(data);
@@ -594,6 +632,8 @@ export default {
       this.jewishYear = "תשפ״ב";
       this.kindergardenRole = null;
       this.isGanenet = false;
+      this.isIntern = false;
+      this.numberOfStudentsInternship = 0;
       this.kindergardenSeniority = 1;
     },
   },
@@ -638,6 +678,8 @@ export default {
     schoolGiftedEdPercentage: 0,
     schoolExtraGiftedEdPercentage: 0,
     isGanenet: false,
+    isIntern: false,
+    numberOfStudentsInternship: 0,
     kindergardenRole: null,
     kindergardenRoles: [
       "גננת משלימה זכאית",
@@ -652,6 +694,9 @@ export default {
     ],
     specialEdPercentageRules: [
       (v) => (v && v >= 0 && v <= 100) || "אחוז משרה צריך להיות בין 0-100",
+    ],
+    numberOfStudentsRules: [
+      (v) => (v && v >= 0 && v <= 3) || "מספר התלמידים צריך להיות בין 0 ל3",
     ],
     levelRules: [(v) => (v && v >= 1 && v <= 9) || "דרגה בין 1 ל-9"],
     seniorityRules: [(v) => (v && v >= 1 && v <= 36) || "ותק בין 1 ל-36"],
@@ -675,6 +720,7 @@ export default {
           value: "specialEducationNoDiplomaCompensation",
         },
         { text: "גמול חינוך מחוננים", value: "giftedEducationCompensation" },
+        { text: "גמול ליווי סטאז׳רים", value: "accompanyingInterns" },
         { text: "גמול גננות", value: "kindergardenCompensation" },
         { text: "סה״כ ברוטו", value: "totalCompensation" },
       ];
@@ -714,6 +760,11 @@ export default {
         0,
         100
       );
+      let numberOfStudentsInternship = limitValue(
+        this.numberOfStudentsInternship,
+        0,
+        3
+      );
       return [
         calculateSalary(
           this.degree,
@@ -733,6 +784,8 @@ export default {
           this.isGiftedEducation,
           "תשפ״ב",
           this.isGanenet,
+          this.isIntern,
+          numberOfStudentsInternship,
           this.kindergardenRole,
           kindergardenSeniority
         ),
@@ -754,6 +807,8 @@ export default {
           this.isGiftedEducation,
           "תשפ״ג",
           this.isGanenet,
+          this.isIntern,
+          numberOfStudentsInternship,
           this.kindergardenRole,
           kindergardenSeniority
         ),
@@ -775,6 +830,8 @@ export default {
           this.isGiftedEducation,
           "תשפ״ד",
           this.isGanenet,
+          this.isIntern,
+          numberOfStudentsInternship,
           this.kindergardenRole,
           kindergardenSeniority
         ),
