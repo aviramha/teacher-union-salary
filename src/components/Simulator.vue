@@ -211,7 +211,8 @@ const seniority2Years = 7;
 const seniority1Year = 36;
 
 const levelShiklit = [
-  1114.46, 983.98, 826.07, 741.53, 563.6, 563.6, 563.6, 563.6, 563.6,
+  1173.08, 1035.73, 869.52, 780.53, 593.24, 593.24,
+  593.24, 593.24, 593.24,
 ];
 
 const firstDegreeAddition = [
