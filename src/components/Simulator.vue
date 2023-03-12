@@ -211,8 +211,7 @@ const seniority2Years = 7;
 const seniority1Year = 36;
 
 const levelShiklit = [
-  1173.08, 1035.73, 869.52, 780.53, 593.24, 593.24,
-  593.24, 593.24, 593.24,
+  1173.08, 1035.73, 869.52, 780.53, 593.24, 593.24, 593.24, 593.24, 593.24,
 ];
 
 const firstDegreeAddition = [
@@ -582,30 +581,34 @@ function calculateSalary(
     internshipComp = calculateAccompanyingInterns(
       numberOfStudentsInternship,
       jewishYear,
-      addition,
-      mixedCompensation
+      additionRaw,
+      mixedCompensationRaw
     );
   }
   let data = {
-    mixedCompensation: Math.round(mixedCompensation),
-    shiklitAddition: Math.round(shiklitAddition),
-    twentytwoAddition: Math.round(addition),
-    phoneReimbursement: Math.round(limitValue(percentage, 0.01, 1) * 48.6),
-    hinuchCompensation: Math.round(hinuchCompensation),
-    roleCompensation1: Math.round(roleCompensation1),
-    roleCompensation2: Math.round(roleCompensation2),
-    specialEducationCompensation: Math.round(specialEdComp),
-    specialEducationNoDiplomaCompensation: Math.round(specialEdNoDiplomaComp),
-    giftedEducationCompensation: Math.round(giftedEdComp),
-    accompanyingInterns: Math.round(internshipComp),
-    kindergardenCompensation: Math.round(kindergardenCompensation),
+    mixedCompensation: mixedCompensation,
+    shiklitAddition: shiklitAddition,
+    twentytwoAddition: addition,
+    phoneReimbursement: limitValue(percentage, 0.01, 1) * 48.6,
+    hinuchCompensation: hinuchCompensation,
+    roleCompensation1: roleCompensation1,
+    roleCompensation2: roleCompensation2,
+    specialEducationCompensation: specialEdComp,
+    specialEducationNoDiplomaCompensation: specialEdNoDiplomaComp,
+    giftedEducationCompensation: giftedEdComp,
+    accompanyingInterns: internshipComp,
+    kindergardenCompensation: kindergardenCompensation,
   };
   const values = Object.values(data);
 
   const sum = values.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
+
   data["totalCompensation"] = sum;
+  for (const key in data) {
+    data[key] = Math.round(data[key]);
+  }
   data["jewishYear"] = jewishYear;
 
   return data;
